@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-const obj = []
+const dfuser = 'default user'
 const Container = styled.section`
   margin: auto;
   margin-top: 10px;
@@ -51,10 +51,34 @@ const Button = styled.button`
 `
 const Home = () => {
   const [value, setValue] = useState('')
-  const postData = () => {
-    obj.push(value)
+  const [obj, setObj] = useState([])
+  const fetchData = async () => {
+    try {
+      const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts')
+      setObj(await res.json())
+    } catch (err) {
+      console.log('Fetch Error :', err)
+    }
+  }
+  const postData = async () => {
+    try {
+      await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userHandle: dfuser, body: value })
+      })
+    } catch (err) {
+      console.log('Fetch Error :', err)
+      return
+    }
+    setObj([{ userHandle: dfuser, body: value }, ...obj])
     setValue('')
   }
+  useEffect(() => {
+    fetchData()
+    // eslint-disable-next-line
+  }, [])
+
   return (
     <div>
       <Container>
@@ -68,8 +92,8 @@ const Home = () => {
         </div>
         {obj.map((_item, _id) => {
           return (
-            <PostContainer key={_id}>{_item}
-              <div className='user'>default user</div>
+            <PostContainer key={_id}>{_item.body}
+              <div className='user'>{_item.userHandle}</div>
             </PostContainer>
           )
         })}
