@@ -1,8 +1,10 @@
 import React, { useState, useRef, useCallback } from 'react'
 import { Container, PostContainer, TextArea, Button } from '../components/homeStyle'
+import ReactTooltip from 'react-tooltip'
 
 const delImg = require('../images/delete.png')
 const likeImg = require('../images/like.jpg')
+const disLikeImg = require('../images/dislike.jpg')
 const CommentImg = require('../images/comment.png')
 const dfuser = 'default user'
 const Home = () => {
@@ -48,6 +50,21 @@ const Home = () => {
     }
     setObj(obj.filter((item) => item._id !== id))
   }
+  const likePost = async (post) => {
+    try {
+      const index = post.likedUsers.indexOf(dfuser)
+      index !== -1 ? post.likedUsers.splice(index, 1) : post.likedUsers.push(dfuser)
+      await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(post)
+      })
+    } catch (err) {
+      console.log('Fetch Error :', err)
+      return
+    }
+    setObj(obj.slice())
+  }
   const postData = async () => {
     try {
       const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
@@ -63,7 +80,8 @@ const Home = () => {
     setObj([insertedObj, ...obj])
     setValue('')
   }
-
+  // const [comments, setComments] = useState(false)
+  // const openComments = (post) => setComments(!comments)
   return (
     <div>
       <Container>
@@ -84,17 +102,19 @@ const Home = () => {
                     onClick={(e) => { delStatus(_item._id) }}
                     src={delImg} height='20px' width='20px' alt='X'
                   />
+                  <ReactTooltip multiline={true} />
                   <img
-                    onClick={(e) => { console.log('liked') }}
-                    src={likeImg} height='20px' width='20px' alt='L'
-                  />
-                  <img
-                    onClick={(e) => { console.log('comment') }}
-                    src={CommentImg} height='20px' width='20px' alt='C'
+                    data-tip={_item.likedUsers.join('<br />')}
+                    onClick={(e) => { likePost(_item) }}
+                    src={_item.likedUsers.includes(dfuser) ? disLikeImg : likeImg} height='20px' width='20px' alt='L'
                   />
                 </div>
                 <div>{_item.userHandle}</div>
               </div>
+              <PostContainer>
+                <textarea />
+                <div>{_item.comments}</div>
+              </PostContainer>
             </PostContainer>
           )
         })}
