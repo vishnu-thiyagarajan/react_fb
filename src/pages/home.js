@@ -1,17 +1,16 @@
 import React, { useState, useRef, useCallback } from 'react'
-import { Container, PostContainer, TextArea, Button } from '../components/homeStyle'
-import ReactTooltip from 'react-tooltip'
+import Post from '../components/Post'
+import { Container, TextArea, Button } from '../components/homeStyle'
 
-const delImg = require('../images/delete.png')
-const likeImg = require('../images/like.jpg')
-const disLikeImg = require('../images/dislike.jpg')
-const CommentImg = require('../images/comment.png')
 const dfuser = 'default user'
 const Home = () => {
   const limit = 5
   const [page, setPage] = useState(0)
   const [value, setValue] = useState('')
+  const [file, setFile] = useState(null)
   const [obj, setObj] = useState([])
+  let data = new FormData()
+  const handler = (update) => setObj(update)
   const observer = useRef()
   let hasMore = true
   const fetchData = async () => {
@@ -37,85 +36,53 @@ const Home = () => {
     })
     if (node) observer.current.observe(node)
   }, [fetchData, hasMore])
-  const delStatus = async (id) => {
-    try {
-      await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ _id: id })
-      })
-    } catch (err) {
-      console.log('Fetch Error :', err)
-      return
-    }
-    setObj(obj.filter((item) => item._id !== id))
-  }
-  const likePost = async (post) => {
-    try {
-      const index = post.likedUsers.indexOf(dfuser)
-      index !== -1 ? post.likedUsers.splice(index, 1) : post.likedUsers.push(dfuser)
-      await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(post)
-      })
-    } catch (err) {
-      console.log('Fetch Error :', err)
-      return
-    }
-    setObj(obj.slice())
-  }
   const postData = async () => {
+    data.append('userHandle', dfuser)
+    data.append('body', value)
+    data.append('likedUsers', [])
+    data.append('comments', [])
+    data.append('file', file)
     try {
       const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userHandle: dfuser, body: value })
+        body: data
       })
       var insertedObj = await res.json()
     } catch (err) {
       console.log('Fetch Error :', err)
       return
+    } finally {
+      console.log('---------------------------')
+      data = new FormData()
     }
+    
     setObj([insertedObj, ...obj])
     setValue('')
   }
-  // const [comments, setComments] = useState(false)
-  // const openComments = (post) => setComments(!comments)
+  const fileSelectedHandler = event => {
+    const files = event.target.files
+    setFile(files[0])
+  }
   return (
     <div>
       <Container>
         <TextArea
+          height='200px'
           placeholder="what's in your mind?" rows='10' cols='60' value={value}
           onChange={(e) => { setValue(e.target.value) }}
         />
         <div className='controls'>
-          <div><Button>Image</Button></div>
+          <div>
+            <input
+              type='file' accept='image/x-png,image/gif,image/jpeg'
+              onChange={fileSelectedHandler}
+            />
+          </div>
           <div><Button onClick={postData}>Post</Button></div>
         </div>
         {obj.map((_item, id) => {
           return (
-            <PostContainer key={id}>{_item.body}
-              <div className='controls'>
-                <div>
-                  <img
-                    onClick={(e) => { delStatus(_item._id) }}
-                    src={delImg} height='20px' width='20px' alt='X'
-                  />
-                  <ReactTooltip multiline={true} />
-                  <img
-                    data-tip={_item.likedUsers.join('<br />')}
-                    onClick={(e) => { likePost(_item) }}
-                    src={_item.likedUsers.includes(dfuser) ? disLikeImg : likeImg} height='20px' width='20px' alt='L'
-                  />
-                </div>
-                <div>{_item.userHandle}</div>
-              </div>
-              <PostContainer>
-                <textarea />
-                <div>{_item.comments}</div>
-              </PostContainer>
-            </PostContainer>
+            <Post key={id} handler={handler} _item={_item} loggedUser={dfuser} obj={obj} />
           )
         })}
         <hr ref={lastPostElementRef} />

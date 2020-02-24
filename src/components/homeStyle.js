@@ -33,7 +33,7 @@ const PostContainer = styled.section`
   }
 `
 const TextArea = styled.textarea`
-  height: 200px;
+  height: ${props => props.height};
   border-radius: 15px;
   resize: none;
   outline: none;
@@ -48,9 +48,17 @@ const Button = styled.button`
   font-weight: bold;
   text-shadow: 1px 1px 1px black;
 `
+
+const Comment = styled.div`
+  display: grid;
+  grid-template-columns: 100px auto auto;
+  word-wrap: break-word;
+  word-break: break-all;
+`
 export {
   Container,
   PostContainer,
   TextArea,
-  Button
+  Button,
+  Comment
 }
