@@ -52,12 +52,11 @@ const Home = () => {
       console.log('Fetch Error :', err)
       return
     } finally {
-      console.log('---------------------------')
       data = new FormData()
     }
-    
     setObj([insertedObj, ...obj])
     setValue('')
+    setFile(null)
   }
   const fileSelectedHandler = event => {
     const files = event.target.files
