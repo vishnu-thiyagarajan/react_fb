@@ -57,6 +57,7 @@ const Home = () => {
     setObj([insertedObj, ...obj])
     setValue('')
     setFile(null)
+    document.getElementById('file-upload').value = null
   }
   const fileSelectedHandler = event => {
     const files = event.target.files
@@ -73,8 +74,8 @@ const Home = () => {
         <div className='controls'>
           <div>
             <input
-              type='file' accept='image/x-png,image/gif,image/jpeg'
-              onChange={fileSelectedHandler}
+              type='file' accept='image/x-png,image/gif,image/jpeg,image/jpg'
+              onChange={fileSelectedHandler} id='file-upload'
             />
           </div>
           <div><Button onClick={postData}>Post</Button></div>

@@ -62,6 +62,7 @@ const Post = (props) => {
   return (
     <div>
       <PostContainer>{item.body}
+        {item.fileName && <img src={process.env.REACT_APP_BACKEND_URL + item.fileName} alt={item.fileName} />}
         <div className='controls'>
           <div>
             <img
