@@ -11,12 +11,12 @@ const Post = (props) => {
   const item = props._item
   const obj = props.obj
   const loggedUser = props.loggedUser
-  const delStatus = async (id) => {
+  const delStatus = async (id, fileName) => {
     try {
       await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ _id: id })
+        body: JSON.stringify({ _id: id, fileName: fileName })
       })
     } catch (err) {
       console.log('Fetch Error :', err)
@@ -66,7 +66,7 @@ const Post = (props) => {
         <div className='controls'>
           <div>
             <img
-              onClick={(e) => { delStatus(item._id) }}
+              onClick={(e) => { delStatus(item._id, item.fileName) }}
               src={delImg} height='20px' width='20px' alt='X'
             />
             <ReactTooltip multiline />

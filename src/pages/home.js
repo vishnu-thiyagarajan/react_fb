@@ -37,6 +37,8 @@ const Home = () => {
     if (node) observer.current.observe(node)
   }, [fetchData, hasMore])
   const postData = async () => {
+    console.log(value, file)
+    if (!value && !file) return
     data.append('userHandle', dfuser)
     data.append('body', value)
     data.append('likedUsers', [])
