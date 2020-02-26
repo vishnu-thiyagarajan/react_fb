@@ -4,7 +4,8 @@ import { Container, TextArea, Button } from '../components/homeStyle'
 
 const dfuser = 'default user'
 const Home = () => {
-  const limit = 5
+  const token = sessionStorage.getItem('SocializeJWT')
+  const limit = Number(process.env.REACT_APP_POST_LIMIT)
   const [page, setPage] = useState(0)
   const [value, setValue] = useState('')
   const [file, setFile] = useState(null)
@@ -15,7 +16,13 @@ const Home = () => {
   let hasMore = true
   const fetchData = async () => {
     try {
-      const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts/' + page + '/' + limit)
+      const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts/' + page + '/' + limit, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer ' + token
+        }
+      })
       const data = await res.json()
       if (!data.length) {
         hasMore = false
@@ -67,28 +74,29 @@ const Home = () => {
   }
   return (
     <div>
-      <Container>
-        <TextArea
-          height='200px'
-          placeholder="what's in your mind?" rows='10' cols='60' value={value}
-          onChange={(e) => { setValue(e.target.value) }}
-        />
-        <div className='controls'>
-          <div>
-            <input
-              type='file' accept='image/x-png,image/gif,image/jpeg,image/jpg'
-              onChange={fileSelectedHandler} id='file-upload'
-            />
+      {token &&
+        <Container>
+          <TextArea
+            height='200px'
+            placeholder="what's in your mind?" rows='10' cols='60' value={value}
+            onChange={(e) => { setValue(e.target.value) }}
+          />
+          <div className='controls'>
+            <div>
+              <input
+                type='file' accept='image/x-png,image/gif,image/jpeg,image/jpg'
+                onChange={fileSelectedHandler} id='file-upload'
+              />
+            </div>
+            <div><Button onClick={postData}>Post</Button></div>
           </div>
-          <div><Button onClick={postData}>Post</Button></div>
-        </div>
-        {obj.map((_item, id) => {
-          return (
-            <Post key={id} handler={handler} _item={_item} loggedUser={dfuser} obj={obj} />
-          )
-        })}
-        <hr ref={lastPostElementRef} />
-      </Container>
+          {obj.map((_item, id) => {
+            return (
+              <Post key={id} handler={handler} _item={_item} loggedUser={dfuser} obj={obj} />
+            )
+          })}
+          <hr ref={lastPostElementRef} />
+        </Container>}
     </div>
   )
 }

@@ -32,16 +32,23 @@ const DesknavBar = styled.nav`
     text-decoration: none;
   }
 `
-const NavBar = () => {
+const NavBar = (props) => {
   return (
     <div>
       <DesknavBar>
         <div className='logo'>Socialize</div>
-        <ul className='nav-links'>
-          <li><Link to='/' className='link'>Home</Link></li>
-          <li><Link to='/login' className='link'>Login</Link></li>
-          <li><Link to='/signup' className='link'>SignUp</Link></li>
-        </ul>
+        {!props.loggedIn &&
+          <ul className='nav-links'>
+            <li><Link to='/' className='link'>Home</Link></li>
+            <li><Link to='/login' className='link'>Login</Link></li>
+            <li><Link to='/signup' className='link'>SignUp</Link></li>
+          </ul>}
+        {props.loggedIn &&
+          <ul className='nav-links'>
+            <li><Link to='/profile' className='link'>Profile</Link></li>
+            <li><Link to='/notification' className='link'>Notification</Link></li>
+            <li><Link to='/logout' className='link'>Logout</Link></li>
+          </ul>}
       </DesknavBar>
     </div>
   )
