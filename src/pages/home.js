@@ -10,41 +10,42 @@ const Home = () => {
     Accept: 'application/json',
     Authorization: 'Bearer ' + token
   }
-  const limit = Number(process.env.REACT_APP_POST_LIMIT)
+  
   const [page, setPage] = useState(0)
   const [value, setValue] = useState('')
   const [file, setFile] = useState(null)
   const [obj, setObj] = useState([])
+  const [hasMore, setHasMore] = useState(true)
   let data = new FormData()
   const handler = (update) => setObj(update)
   const observer = useRef()
-  let hasMore = true
-  const fetchData = async () => {
-    try {
-      const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts/' + page + '/' + limit, {
-        method: 'GET',
-        headers: header
-      })
-      const data = await res.json()
-      if (!data.length) {
-        hasMore = false
-        return
-      }
-      setObj([...obj, ...data])
-      setPage(page + limit)
-    } catch (err) {
-      console.log('Fetch Error :', err)
-    }
-  }
   const lastPostElementRef = useCallback((node) => {
     if (observer.current) observer.current.disconnect()
     observer.current = new IntersectionObserver(entries => {
+      const limit = Number(process.env.REACT_APP_POST_LIMIT)
       if (entries[0].isIntersecting && hasMore) {
+        const fetchData = async () => {
+          try {
+            const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts/' + page + '/' + limit, {
+              method: 'GET',
+              headers: header
+            })
+            const data = await res.json()
+            if (!data.length) {
+              setHasMore(false)
+              return
+            }
+            setObj([...obj, ...data])
+            setPage(page + limit)
+          } catch (err) {
+            console.log('Fetch Error :', err)
+          }
+        }
         fetchData()
       }
     })
     if (node) observer.current.observe(node)
-  }, [fetchData, hasMore])
+  }, [hasMore, page, obj, header])
   const postData = async () => {
     if (!value && !file) return
     data.append('userHandle', loggedEmail)

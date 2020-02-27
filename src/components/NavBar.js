@@ -45,8 +45,9 @@ const NavBar = (props) => {
           </ul>}
         {props.loggedIn &&
           <ul className='nav-links'>
-            <li><Link to='/profile' className='link'>Profile</Link></li>
-            <li><Link to='/notification' className='link'>Notification</Link></li>
+            <li><Link to='/' className='link'>Home</Link></li>
+            <li><Link to='/profile' className='link'>{props.loggedIn.name}</Link></li>
+            <li><Link to='/notification' className='link'>Notifications</Link></li>
             <li><Link to='/logout' className='link'>Logout</Link></li>
           </ul>}
       </DesknavBar>

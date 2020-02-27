@@ -9,6 +9,7 @@ const disLikeImg = require('../images/dislike.jpg')
 const Post = (props) => {
   const token = sessionStorage.getItem('SocializeJWT')
   const header = {
+    'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: 'Bearer ' + token
   }

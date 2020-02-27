@@ -4,6 +4,7 @@ import NavBar from './components/NavBar'
 import home from './pages/home'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
+import Profile from './pages/Profile'
 import signup from './pages/signup'
 import './App.css'
 
@@ -16,7 +17,7 @@ function App () {
         <Route exact path='/' component={home} />
         <Route exact path='/login' render={() => (<Login loginHandler={setLoggedInUser} />)} />
         <Route exact path='/signup' component={signup} />
-        <Route exact path='/profile' component={home} />
+        <Route exact path='/profile' component={Profile} />
         <Route exact path='/notification' component={Login} />
         <Route exact path='/logout' render={() => (<Logout loginHandler={setLoggedInUser} />)} />
       </Switch>
