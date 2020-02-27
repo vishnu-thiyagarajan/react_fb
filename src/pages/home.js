@@ -2,9 +2,14 @@ import React, { useState, useRef, useCallback } from 'react'
 import Post from '../components/Post'
 import { Container, TextArea, Button } from '../components/homeStyle'
 
-const dfuser = 'default user'
 const Home = () => {
+  const loggedEmail = sessionStorage.getItem('loggedEmail')
+  const loggedUser = sessionStorage.getItem('loggedUser')
   const token = sessionStorage.getItem('SocializeJWT')
+  const header = {
+    Accept: 'application/json',
+    Authorization: 'Bearer ' + token
+  }
   const limit = Number(process.env.REACT_APP_POST_LIMIT)
   const [page, setPage] = useState(0)
   const [value, setValue] = useState('')
@@ -18,10 +23,7 @@ const Home = () => {
     try {
       const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts/' + page + '/' + limit, {
         method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + token
-        }
+        headers: header
       })
       const data = await res.json()
       if (!data.length) {
@@ -44,9 +46,9 @@ const Home = () => {
     if (node) observer.current.observe(node)
   }, [fetchData, hasMore])
   const postData = async () => {
-    console.log(value, file)
     if (!value && !file) return
-    data.append('userHandle', dfuser)
+    data.append('userHandle', loggedEmail)
+    data.append('userName', loggedUser)
     data.append('body', value)
     data.append('likedUsers', [])
     data.append('comments', [])
@@ -54,6 +56,7 @@ const Home = () => {
     try {
       const res = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
         method: 'POST',
+        headers: header,
         body: data
       })
       var insertedObj = await res.json()
@@ -92,7 +95,10 @@ const Home = () => {
           </div>
           {obj.map((_item, id) => {
             return (
-              <Post key={id} handler={handler} _item={_item} loggedUser={dfuser} obj={obj} />
+              <Post
+                key={id} handler={handler} _item={_item} loggedUser={loggedUser}
+                loggedEmail={loggedEmail} obj={obj}
+              />
             )
           })}
           <hr ref={lastPostElementRef} />

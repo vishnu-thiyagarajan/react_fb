@@ -7,6 +7,11 @@ const likeImg = require('../images/like.jpg')
 const disLikeImg = require('../images/dislike.jpg')
 
 const Post = (props) => {
+  const token = sessionStorage.getItem('SocializeJWT')
+  const header = {
+    Accept: 'application/json',
+    Authorization: 'Bearer ' + token
+  }
   const [value, setValue] = useState('')
   const item = props._item
   const obj = props.obj
@@ -15,7 +20,7 @@ const Post = (props) => {
     try {
       await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: header,
         body: JSON.stringify({ _id: id, fileName: fileName })
       })
     } catch (err) {
@@ -30,7 +35,7 @@ const Post = (props) => {
       index !== -1 ? post.likedUsers.splice(index, 1) : post.likedUsers.push(loggedUser)
       await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: header,
         body: JSON.stringify(post)
       })
     } catch (err) {
@@ -40,13 +45,12 @@ const Post = (props) => {
     props.handler(obj.slice())
   }
   const addComment = async (event) => {
-    // console.log(props.loggedUser, loggedUser)
     const cmntObj = { user: loggedUser, comment: value }
     item.comments.push(cmntObj)
     try {
       await window.fetch(process.env.REACT_APP_BACKEND_URL + 'posts', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: header,
         body: JSON.stringify(item)
       })
     } catch (err) {
@@ -65,10 +69,11 @@ const Post = (props) => {
         {item.fileName && <img src={process.env.REACT_APP_BACKEND_URL + item.fileName} alt={item.fileName} />}
         <div className='controls'>
           <div>
-            <img
-              onClick={(e) => { delStatus(item._id, item.fileName) }}
-              src={delImg} height='20px' width='20px' alt='X'
-            />
+            {props.loggedEmail === item.userHandle &&
+              <img
+                onClick={(e) => { delStatus(item._id, item.fileName) }}
+                src={delImg} height='20px' width='20px' alt='X'
+              />}
             <ReactTooltip multiline />
             <img
               data-tip={item.likedUsers.join('<br />')}
@@ -76,7 +81,7 @@ const Post = (props) => {
               src={item.likedUsers.includes(loggedUser) ? disLikeImg : likeImg} height='20px' width='20px' alt='L'
             />
           </div>
-          <div>{item.userHandle}</div>
+          <div>{item.userName}</div>
         </div>
         <PostContainer>
           <TextArea
