@@ -9,7 +9,7 @@ const disLikeImg = require('../images/dislike.jpg')
 
 const Post = (props) => {
   const history = useHistory()
-  const token = sessionStorage.getItem('SocializeJWT')
+  const token = localStorage.getItem('SocializeJWT')
   const header = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -64,7 +64,8 @@ const Post = (props) => {
     props.handler(obj.slice())
   }
   const goToProfile = (email) => {
-    history.push('/profile/' + email)
+    props.setSelectedProfile(email)
+    history.push('/profile')
   }
   const handleChange = (event) => {
     setValue(event.target.value)

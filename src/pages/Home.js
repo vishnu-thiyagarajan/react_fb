@@ -2,15 +2,14 @@ import React, { useState, useRef, useCallback } from 'react'
 import Post from '../components/Post'
 import { Container, TextArea, Button } from '../components/homeStyle'
 
-const Home = () => {
-  const loggedEmail = sessionStorage.getItem('loggedEmail')
-  const loggedUser = sessionStorage.getItem('loggedUser')
-  const token = sessionStorage.getItem('SocializeJWT')
+const Home = (props) => {
+  const loggedEmail = props.loggedInUser ? props.loggedInUser.email : null
+  const loggedUser = props.loggedInUser ? props.loggedInUser.name : null
+  const token = localStorage.getItem('SocializeJWT')
   const header = {
     Accept: 'application/json',
     Authorization: 'Bearer ' + token
   }
-  
   const [page, setPage] = useState(0)
   const [value, setValue] = useState('')
   const [file, setFile] = useState(null)
@@ -98,7 +97,7 @@ const Home = () => {
             return (
               <Post
                 key={id} handler={handler} _item={_item} loggedUser={loggedUser}
-                loggedEmail={loggedEmail} obj={obj}
+                loggedEmail={loggedEmail} obj={obj} setSelectedProfile={props.setSelectedProfile}
               />
             )
           })}

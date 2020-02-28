@@ -29,9 +29,8 @@ const Login = (props) => {
       const response = await res.json()
       if (res.status === 403 || res.status === 404) return setMessage({ color: 'Red', body: response.message })
       if (res.status === 200) {
-        sessionStorage.setItem('SocializeJWT', response.accessToken)
-        sessionStorage.setItem('loggedUser', response.loggedUser)
-        sessionStorage.setItem('loggedEmail', response.loggedEmail)
+        localStorage.setItem('SocializeJWT', response.accessToken)
+        localStorage.setItem('loggedUser', JSON.stringify({ email: response.loggedEmail, name: response.loggedUser }))
         props.loginHandler({ name: response.loggedUser, email: response.loggedEmail })
         history.push('/')
       }

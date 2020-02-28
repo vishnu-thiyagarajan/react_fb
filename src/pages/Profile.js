@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'
-// import { Container } from '../components/loginStyle'
-import { Container } from '../components/homeStyle'
+import { DpContainer } from '../components/profileStyle'
 
 const Profile = (props) => {
-  const loggedEmail = sessionStorage.getItem('loggedEmail')
+  console.table(props)
+  const loggedEmail = props.loggedInUser ? props.loggedInUser.email : null
   const [dp, setDp] = useState(null)
   const [user, setUser] = useState(null)
   const inputFile = useRef(null)
@@ -17,7 +17,7 @@ const Profile = (props) => {
         method: 'PUT',
         headers: {
           Accept: 'application/json',
-          Authorization: 'Bearer ' + sessionStorage.getItem('SocializeJWT')
+          Authorization: 'Bearer ' + localStorage.getItem('SocializeJWT')
         },
         body: data
       })
@@ -30,41 +30,39 @@ const Profile = (props) => {
       data = new FormData()
     }
   }
-  const displayDp = async () => {
-    try {
-      console.log(props.match.params.emailid)
-      console.log(props.match.params)
-      const response = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'users/' + props.match.params.emailid, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + sessionStorage.getItem('SocializeJWT')
-        }
-      })
-      const res = await response.json()
-      setDp(res.dp)
-      setUser(res.userName)
-    } catch (err) {
-      console.log('Fetch Error :', err)
-    }
-  }
   useEffect(() => {
+    const displayDp = async () => {
+      try {
+        const response = await window.fetch(process.env.REACT_APP_BACKEND_URL + 'users/' + props.selectedProfile, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('SocializeJWT')
+          }
+        })
+        const res = await response.json()
+        setDp(res.dp)
+        setUser(res.userName)
+      } catch (err) {
+        console.log('Fetch Error :', err)
+      }
+    }
     displayDp()
-  }, [])
+  }, [props])
   const onDivClick = () => inputFile.current.click()
   return (
     <div>
-      {props.match.params.emailid === loggedEmail &&
-        <div onClick={onDivClick}>
-          {!dp && <h1>To upload image click me</h1>}
-          {dp && <img src={process.env.REACT_APP_BACKEND_URL + 'dp/' + dp} alt={dp} />}
-        </div>}
-      {props.match.params.emailid !== loggedEmail &&
-        <img src={process.env.REACT_APP_BACKEND_URL + 'dp/' + dp} alt={dp} />}
-      <input type='file' id='file' onChange={fileSelectedHandler} ref={inputFile} style={{ display: 'none' }} />
-      <Container>
+      <DpContainer>
+        {props.selectedProfile === loggedEmail &&
+          <div onClick={onDivClick}>
+            {!dp && <h1>To upload image click me</h1>}
+            {dp && <img src={process.env.REACT_APP_BACKEND_URL + 'dp/' + dp} alt={dp} />}
+          </div>}
+        {props.selectedProfile !== loggedEmail &&
+          <img src={process.env.REACT_APP_BACKEND_URL + 'dp/' + dp} alt={dp} />}
+        <input type='file' id='file' onChange={fileSelectedHandler} ref={inputFile} style={{ display: 'none' }} />
         <h1>{user}</h1>
-      </Container>
+      </DpContainer>
     </div>
   )
 }

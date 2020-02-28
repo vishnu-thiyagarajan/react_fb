@@ -4,8 +4,8 @@ import { useHistory } from 'react-router-dom'
 
 const Logout = (props) => {
   const history = useHistory()
-  sessionStorage.clear()
-  setTimeout(() => history.push('/login'), 3000)
+  localStorage.clear()
+  setTimeout(() => history.push('/login'), 1000)
   props.loginHandler(null)
   return (
     <div>

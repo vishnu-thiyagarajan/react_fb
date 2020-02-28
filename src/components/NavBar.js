@@ -33,6 +33,10 @@ const DesknavBar = styled.nav`
   }
 `
 const NavBar = (props) => {
+  console.log(props)
+  const setProfile = () => {
+    props.setSelectedProfile(props.loggedIn.email)
+  }
   return (
     <div>
       <DesknavBar>
@@ -46,7 +50,7 @@ const NavBar = (props) => {
         {props.loggedIn &&
           <ul className='nav-links'>
             <li><Link to='/' className='link'>Home</Link></li>
-            <li><Link to={'/profile/' + sessionStorage.getItem('loggedEmail')} className='link'>{sessionStorage.getItem('loggedUser')}</Link></li>
+            <li><Link to='/profile' onClick={setProfile} className='link'>{props.loggedIn.name}</Link></li>
             <li><Link to='/notification' className='link'>Notifications</Link></li>
             <li><Link to='/logout' className='link'>Logout</Link></li>
           </ul>}
