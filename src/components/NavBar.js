@@ -46,7 +46,7 @@ const NavBar = (props) => {
         {props.loggedIn &&
           <ul className='nav-links'>
             <li><Link to='/' className='link'>Home</Link></li>
-            <li><Link to='/profile' className='link'>{props.loggedIn.name}</Link></li>
+            <li><Link to={'/profile/' + sessionStorage.getItem('loggedEmail')} className='link'>{sessionStorage.getItem('loggedUser')}</Link></li>
             <li><Link to='/notification' className='link'>Notifications</Link></li>
             <li><Link to='/logout' className='link'>Logout</Link></li>
           </ul>}

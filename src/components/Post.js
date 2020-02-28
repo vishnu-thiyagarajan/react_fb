@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import ReactTooltip from 'react-tooltip'
+import { useHistory } from 'react-router-dom'
 
 import { PostContainer, TextArea, Comment } from '../components/homeStyle'
 const delImg = require('../images/delete.png')
@@ -7,6 +8,7 @@ const likeImg = require('../images/like.jpg')
 const disLikeImg = require('../images/dislike.jpg')
 
 const Post = (props) => {
+  const history = useHistory()
   const token = sessionStorage.getItem('SocializeJWT')
   const header = {
     'Content-Type': 'application/json',
@@ -61,6 +63,9 @@ const Post = (props) => {
     setValue('')
     props.handler(obj.slice())
   }
+  const goToProfile = (email) => {
+    history.push('/profile/' + email)
+  }
   const handleChange = (event) => {
     setValue(event.target.value)
   }
@@ -82,7 +87,7 @@ const Post = (props) => {
               src={item.likedUsers.includes(loggedUser) ? disLikeImg : likeImg} height='20px' width='20px' alt='L'
             />
           </div>
-          <div>{item.userName}</div>
+          <div onClick={(e) => { goToProfile(item.userHandle) }}>{item.userName}</div>
         </div>
         <PostContainer>
           <TextArea
