@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react'
 import { DpContainer } from '../components/profileStyle'
 
 const Profile = (props) => {
-  console.table(props)
   const loggedEmail = props.loggedInUser ? props.loggedInUser.email : null
   const [dp, setDp] = useState(null)
   const [user, setUser] = useState(null)

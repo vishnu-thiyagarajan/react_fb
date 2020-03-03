@@ -4,6 +4,7 @@ import NavBar from './components/NavBar'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
+import Notification from './pages/Notification'
 import Profile from './pages/Profile'
 import signup from './pages/signup'
 import './App.css'
@@ -21,12 +22,23 @@ function App () {
     <Router>
       <NavBar loggedIn={loggedInUser} setSelectedProfile={setSelectedProfile} />
       <Switch>
-        <Route exact path='/' component={() => <Home loggedInUser={loggedInUser} setSelectedProfile={setSelectedProfile} />} />
-        <Route exact path='/login' component={() => <Login loginHandler={setLoggedInUser} />} />
+        <Route exact path='/'>
+          <Home loggedInUser={loggedInUser} setSelectedProfile={setSelectedProfile} />
+        </Route>
+        <Route exact path='/login'>
+          <Login loginHandler={setLoggedInUser} />
+        </Route>
         <Route exact path='/signup' component={signup} />
-        <Route exact path='/profile' component={() => <Profile loggedInUser={loggedInUser} selectedProfile={selectedProfile} />} />
-        <Route exact path='/notification' component={Login} />
-        <Route exact path='/logout' component={() => <Logout loginHandler={setLoggedInUser} />} />
+        <Route exact path='/profile'>
+          <Profile loggedInUser={loggedInUser} selectedProfile={selectedProfile} />
+        </Route>
+        <Route exact path='/notification'>
+          <Notification loggedInUser={loggedInUser} />
+        </Route>
+        <Route exact path='/logout'>
+          <Logout loginHandler={setLoggedInUser} />
+        </Route>
+        <Route path='*'>NotFound</Route>
       </Switch>
     </Router>
   )

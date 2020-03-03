@@ -1,6 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Post from '../components/Post'
 import { Container, TextArea, Button } from '../components/homeStyle'
+import socketIOClient from 'socket.io-client'
 
 const Home = (props) => {
   const loggedEmail = props.loggedInUser ? props.loggedInUser.email : null
@@ -10,6 +11,19 @@ const Home = (props) => {
     Accept: 'application/json',
     Authorization: 'Bearer ' + token
   }
+  const socket = socketIOClient('http://127.0.0.1:8000')
+  useEffect(() => {
+    socket.on('receive message', payload => {
+      console.log(payload)
+    })
+  }, [socket])
+
+  const handleNewMessage = () => {
+    socket.emit('new message', {
+      room: 'test-room'
+    })
+  }
+
   const [page, setPage] = useState(0)
   const [value, setValue] = useState('')
   const [file, setFile] = useState(null)
@@ -69,6 +83,7 @@ const Home = (props) => {
     setObj([insertedObj, ...obj])
     setValue('')
     setFile(null)
+    handleNewMessage()
     document.getElementById('file-upload').value = null
   }
   const fileSelectedHandler = event => {
