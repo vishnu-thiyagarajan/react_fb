@@ -32,7 +32,7 @@ const Login = (props) => {
         localStorage.setItem('SocializeJWT', response.accessToken)
         localStorage.setItem('loggedUser', JSON.stringify({ email: response.loggedEmail, name: response.loggedUser }))
         props.loginHandler({ name: response.loggedUser, email: response.loggedEmail })
-        history.push('/')
+        history.push('/notification')
       }
     } catch (err) {
       setMessage({ color: 'Red', body: 'Check Internet Connection' })

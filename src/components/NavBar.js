@@ -33,7 +33,6 @@ const DesknavBar = styled.nav`
   }
 `
 const NavBar = (props) => {
-  console.log(props)
   const setProfile = () => {
     props.setSelectedProfile(props.loggedIn.email)
   }

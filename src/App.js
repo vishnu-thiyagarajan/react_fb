@@ -8,9 +8,11 @@ import Notification from './pages/Notification'
 import Profile from './pages/Profile'
 import signup from './pages/signup'
 import './App.css'
+import socketIOClient from 'socket.io-client'
 
 function App () {
   const [loggedInUser, setLoggedInUser] = useState(null)
+  const [notify, setNotify] = useState([])
   const [selectedProfile, setSelectedProfile] = useState(null)
   useEffect(() => {
     const prevLogin = localStorage.getItem('loggedUser')
@@ -18,12 +20,27 @@ function App () {
       setLoggedInUser(JSON.parse(prevLogin))
     }
   }, [setLoggedInUser])
+  const socket = socketIOClient('http://127.0.0.1:8000')
+  useEffect(() => {
+    if (loggedInUser) {
+      socket.on('receive message', payload => {
+        document.title = (notify.length + 1) + ' new notification'
+        notify.unshift(payload)
+        setNotify(notify)
+      })
+    }
+  }, [loggedInUser, socket, notify, setNotify])
+  const handleNewMessage = (newPost) => {
+    socket.emit('new message', newPost)
+  }
+  const getNotifyLength = () => notify.length
+  console.log(notify)
   return (
     <Router>
-      <NavBar loggedIn={loggedInUser} setSelectedProfile={setSelectedProfile} />
+      <NavBar loggedIn={loggedInUser} setSelectedProfile={setSelectedProfile} getNotifyLength={getNotifyLength} />
       <Switch>
         <Route exact path='/'>
-          <Home loggedInUser={loggedInUser} setSelectedProfile={setSelectedProfile} />
+          <Home loggedInUser={loggedInUser} setSelectedProfile={setSelectedProfile} handleNewMessage={handleNewMessage} />
         </Route>
         <Route exact path='/login'>
           <Login loginHandler={setLoggedInUser} />
@@ -33,7 +50,7 @@ function App () {
           <Profile loggedInUser={loggedInUser} selectedProfile={selectedProfile} />
         </Route>
         <Route exact path='/notification'>
-          <Notification loggedInUser={loggedInUser} />
+          <Notification loggedInUser={loggedInUser} notify={notify} />
         </Route>
         <Route exact path='/logout'>
           <Logout loginHandler={setLoggedInUser} />
